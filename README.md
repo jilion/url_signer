@@ -10,6 +10,7 @@ UrlSigner is an easy way to get signed URLs using HMAC functionality.
 ### Usage & options
 
 Using `UrlSigner.sign_url`:
+
 ```ruby
 UrlSigner.sign_url("http://google.com/foo/bar?toc=tic&tac=tuc", 'your_secret_key')
 # => The signature will be generated from 'foo/bar?tac=tuc&toc=tic'
@@ -34,6 +35,7 @@ Actually, `UrlSigner.sign_url` creates a new `UrlSigner::Signer`, passes the arg
 That means that you can also create an instance of `UrlSigner::Signer` and call `UrlSigner::Signer#sign_url` when you need it.
 
 Instance of `UrlSigner::Signer` can be created with the no-block, full-block, or mixed syntax:
+
 ```ruby
 @signer = UrlSigner::Signer.new("http://google.com/foo/bar?toc=tic&tac=tuc", 'your_secret_key', :path => false, :signature_key => 'sign')
 
