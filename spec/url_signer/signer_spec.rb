@@ -20,6 +20,10 @@ describe UrlSigner::Signer do
     it "returns an URL with a new signature param appended" do
       URI.parse(described_class.new(url, key).sign_url).query.should =~ /^abc=def&test=true&signature=.+/
     end
+
+    it "always append '?' before generate signature" do
+      described_class.new("http://google.com/foo/bar", key).sign_url.should == described_class.new("http://google.com/foo/bar?", key).sign_url
+    end
   end
 
 end
