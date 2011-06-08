@@ -1,13 +1,16 @@
-## UrlSigner [![Build Status](http://travis-ci.org/jilion/url_signer.png)](http://travis-ci.org/jilion/url_signer)
+UrlSigner [![Build Status](http://travis-ci.org/jilion/url_signer.png)](http://travis-ci.org/jilion/url_signer)
+=========
 
 UrlSigner is an easy way to get signed URLs using HMAC functionality.
 
-### Features
+Features
+--------
 
 * Sign URLs using [HMAC](http://www.ietf.org/rfc/rfc2104.txt).
 * Tested on Ruby 1.8.7, 1.9.2, REE, Rubinius & JRuby.
 
-### Usage
+Usage
+-----
 
 There is 2 ways to use this gem:
 
@@ -27,7 +30,8 @@ only-arguments, only-block, or mixed (arguments + block):
   - The last optional argument is a Hash of options.
   - All these arguments can be set with the block syntax instead.
 
-### Options
+Options
+-------
 
 List of available options:
 
@@ -58,7 +62,8 @@ UrlSigner::Signer.new("http://google.com/foo/bar?toc=tic&tac=tuc", :path => fals
 end
 ```
 
-#### Using `UrlSigner`
+Using `UrlSigner`
+-----------------
 
 `UrlSigner.signed_url` and `UrlSigner.signature` can be called on this module.
 
@@ -82,11 +87,12 @@ UrlSigner.signature("http://google.com/foo/bar?toc=tic&tac=tuc", :path => false)
   signer.digest_key           = 'your_secret_key'
   signer.signature_param_name = 'sign'
 end
-# => "http://google.com/foo/bar?tac=tuc&toc=tic&sign=<generated_signature>"
+# => "<generated_signature>"
 # Signature is digested from "tac=tuc&toc=tic"
 ```
 
-#### Using `UrlSigner::Signer`
+Using `UrlSigner::Signer`
+-----------------
 
 `UrlSigner.signed_url` can be called with the no-block, full-block, or mixed (arguments + block) syntax.
 
@@ -134,12 +140,14 @@ end
 
 Note: `UrlSigner.signed_url` and `UrlSigner::Signer#signed_url` sort the query parameters alphabetically.
 
-### Inspiration
+Inspiration
+-----------
 
 - http://code.google.com/apis/maps/documentation/webservices/#URLSigning
 - http://gmaps-samples.googlecode.com/svn/trunk/urlsigning/urlsigner.rb
 
-### Development
+Development
+-----------
 
 * Source hosted at [GitHub](https://github.com/jilion/url_signer).
 * Report Issues/Feature requests on [GitHub Issues](https://github.com/jilion/url_signer/issues).
@@ -148,10 +156,12 @@ Pull requests are very welcome! Make sure your patches are well tested. Please c
 change
 you make. Please do not change the version in your pull-request.
 
-### Author
+Author
+------
 
 [Rémy Coutable](https://github.com/rymai)
 
-### Contributors
+Contributors
+------------
 
 https://github.com/jilion/url_signer/contributors
