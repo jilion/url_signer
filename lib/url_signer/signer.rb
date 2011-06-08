@@ -7,10 +7,10 @@ module UrlSigner
   class Signer
 
     attr_accessor :url, :digest_key, :signature, :options
-    ALLOWED_OPTIONS = [:path, :base64_digest_key, :signature_param_name]
+    ALLOWED_OPTIONS = [:path, :digest_key_encoding, :signature_param_name]
 
     def initialize(*args)
-      @options = { :path => true, :base64_digest_key => false, :signature_param_name => 'signature' }
+      @options = { :path => true, :digest_key_encoding => :plain, :signature_param_name => 'signature' }
       @options.merge!(args.pop) if args.last.kind_of? Hash
       @url, @digest_key = args.shift(2)
 
@@ -25,7 +25,8 @@ module UrlSigner
     def signed_url
       "#{@url.scheme}://" +
       @url.host +
-      @signed_url ||= @url.path + '?' + sorted_query_string + "#{@options[:signature_param_name]}=#{signature}"
+      @signed_url ||= @url.path + '?' + sorted_query_string + (sorted_query_string.empty? ? '' : '&') +
+      "#{@options[:signature_param_name]}=#{signature}"
     rescue => ex
       puts ex.message
       ''
@@ -45,7 +46,12 @@ module UrlSigner
 
     def signature
       # 1/ decode the private key
-      decoded_digest_key = @options[:base64_digest_key] ? url_safe_base64_decode(@digest_key) : @digest_key
+      decoded_digest_key = case @options[:digest_key_encoding]
+      when :base64
+        url_safe_base64_decode(@digest_key)
+      else
+        @digest_key
+      end
 
       # 2/ create a signature using the private key and the URL
       signature = HMAC::SHA1.digest(decoded_digest_key, (@options[:path] ? @url.path : '') + sorted_query_string)
@@ -57,7 +63,7 @@ module UrlSigner
   private
 
     def sorted_query_string
-      @sorted_query_string ||= @url.query.nil? || @url.query.empty? ? '' : @url.query.split('&').sort.join('&') + '&'
+      @sorted_query_string ||= @url.query.nil? || @url.query.empty? ? '' : @url.query.split('&').sort.join('&')
     end
 
     def url_safe_base64_decode(base64_string)
