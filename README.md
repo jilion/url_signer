@@ -1,4 +1,4 @@
-## UrlSigner [![Build Status](http://travis-ci.org/rymai/url_signer.png)](http://travis-ci.org/rymai/url_signer)
+## UrlSigner [![Build Status](http://travis-ci.org/jilion/url_signer.png)](http://travis-ci.org/jilion/url_signer)
 
 UrlSigner is an easy way to get signed URLs using HMAC functionality.
 
@@ -141,8 +141,8 @@ Note: `UrlSigner.signed_url` and `UrlSigner::Signer#signed_url` sort the query p
 
 ### Development
 
-* Source hosted at [GitHub](https://github.com/rymai/url_signer).
-* Report Issues/Feature requests on [GitHub Issues](https://github.com/rymai/url_signer/issues).
+* Source hosted at [GitHub](https://github.com/jilion/url_signer).
+* Report Issues/Feature requests on [GitHub Issues](https://github.com/jilion/url_signer/issues).
 
 Pull requests are very welcome! Make sure your patches are well tested. Please create a topic branch for every separate 
 change
@@ -154,4 +154,4 @@ you make. Please do not change the version in your pull-request.
 
 ### Contributors
 
-https://github.com/rymai/url_signer/contributors
+https://github.com/jilion/url_signer/contributors

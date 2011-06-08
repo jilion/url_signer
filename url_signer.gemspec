@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name        = "url_signer"
   s.version     = UrlSigner::VERSION
   s.authors     = ["Rémy Coutable"]
-  s.email       = ["rymai@rymai.me"]
+  s.email       = ["remy@jilion.com"]
   s.homepage    = ""
   s.summary     = %q{An easy way to get signed URLs using HMAC functionality}
   s.description = %q{Given an URL and a private key, UrlSigner returns you a signed URL ready to use for API calls}

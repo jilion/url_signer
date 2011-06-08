@@ -4,6 +4,3 @@ rvm:
   - ree
   - rbx
   - jruby
-notifications:
-  recipients:
-    - rymai@rymai.me
