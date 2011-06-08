@@ -7,52 +7,84 @@ UrlSigner is an easy way to get signed URLs using HMAC functionality.
 * Sign URLs using [HMAC](http://www.ietf.org/rfc/rfc2104.txt)
 * Tested on Ruby 1.8.7, 1.9.2, REE, Rubinius & JRuby.
 
-### Usage & options
+### Usage
 
-Using `UrlSigner.sign_url`:
+Using `UrlSigner.sign_url` with the no-block, full-block, or mixed (arguments + block) syntax:
 
 ```ruby
-UrlSigner.sign_url("http://google.com/foo/bar?toc=tic&tac=tuc", 'your_secret_key')
-# => The signature will be generated from 'foo/bar?tac=tuc&toc=tic'
-# => The signed URL will look like 'http://google.com/foo/bar?tac=tuc&toc=tic&signature=<generated_signature>'
+# No block: arguments
+UrlSigner.sign_url("http://google.com/foo/bar?toc=tic&tac=tuc", 'your_secret_key', {})
+# => "http://google.com/foo/bar?tac=tuc&toc=tic&signature=<generated_signature>"
 
-UrlSigner.sign_url("http://google.com/foo/bar?toc=tic&tac=tuc", 'your_secret_key', :path => false)
-# => The signature will be generated from 'tac=tuc&toc=tic' (without the path)
-# => The signed URL will look like 'http://google.com/foo/bar?tac=tuc&toc=tic&signature=<generated_signature>'
+# Block only
+UrlSigner.sign_url do |signer|
+  signer.url                  = "http://google.com/foo/bar?toc=tic&tac=tuc"
+  signer.digest_key           = 'your_secret_key'
+  signer.path                 = false
+  signer.signature_param_name = 'sign'
+end
 
-UrlSigner.sign_url("http://google.com/foo/bar?toc=tic&tac=tuc", 'your_secret_key', :order_query => false)
-# => The signature will be generated from 'foo/bar?toc=tic&tac=tuc' (without reordering the query parameters by key)
-# => The signed URL will look like 'http://google.com/foo/bar?tac=tuc&toc=tic&signature=<generated_signature>'
-
-UrlSigner.sign_url("http://google.com/foo/bar?toc=tic&tac=tuc", 'your_secret_key', :base64_private_key => true)
-# => The given private key will be decoded from modified Base64 for URLs before being used for digestion
-
-UrlSigner.sign_url("http://google.com/foo/bar?toc=tic&tac=tuc", 'your_secret_key', :signature_key => 'sign')
-# => The signed URL will look like 'http://google.com/foo/bar?tac=tuc&toc=tic&sign=<generated_signature>'
+# Mixed: arguments + block
+UrlSigner.sign_url("http://google.com/foo/bar?toc=tic&tac=tuc", :path => false) do |signer|
+  signer.digest_key           = 'your_secret_key'
+  signer.signature_param_name = 'sign'
+end
 ```
 
-Actually, `UrlSigner.sign_url` creates a new `UrlSigner::Signer`, passes the arguments through and calling `UrlSigner::Signer#sign_url` on it.
-That means that you can also create an instance of `UrlSigner::Signer` and call `UrlSigner::Signer#sign_url` when you need it.
+Actually, `UrlSigner.sign_url` creates a new instance of `UrlSigner::Signer`, passes the arguments through and calls `#signed_url` on it.
+That means that you can also create an instance of `UrlSigner::Signer` and call `#signature` or `#signed_url` when you need it.
 
-Instance of `UrlSigner::Signer` can be created with the no-block, full-block, or mixed syntax:
+Instance of `UrlSigner::Signer` can be created with the no-block (arguments only), full-block, or mixed (arguments + block) syntax as well:
 
 ```ruby
-@signer = UrlSigner::Signer.new("http://google.com/foo/bar?toc=tic&tac=tuc", 'your_secret_key', :path => false, :signature_key => 'sign')
+# No block: arguments
+@signer = UrlSigner::Signer.new("http://google.com/foo/bar?toc=tic&tac=tuc", 'your_secret_key', :path => false, :signature_param_name => 'sign')
 
+# Block only
 @signer = UrlSigner::Signer.new do |signer|
-  signer.url_to_sign        = "http://google.com/foo/bar?toc=tic&tac=tuc"
-  signer.private_key        = 'your_secret_key'
-  signer.path               = false
-  signer.signature_key      = 'sign'
+  signer.url                  = "http://google.com/foo/bar?toc=tic&tac=tuc"
+  signer.digest_key           = 'your_secret_key'
+  signer.path                 = false
+  signer.signature_param_name = 'sign'
+end
+
+# Mixed: arguments + block
+UrlSigner::Signer.new("http://google.com/foo/bar?toc=tic&tac=tuc", :path => false) do |signer|
+  signer.digest_key           = 'your_secret_key'
+  signer.signature_param_name = 'sign'
+end
+
+# And when you're ready, get the signature:
+@signer.signature  # => "<generated_signature>"
+
+# Or the signed url:
+@signer.signed_url # => "http://google.com/foo/bar?toc=tic&tac=tuc&sign=<generated_signature>"
+```
+
+### Options
+
+List of available options:
+
+- `:path => false`             # Include the path in the string used for the signature (default: true).
+- `:base64_digest_key => true` # Whether the given `digest_key` is encoded in "modified Base64 for URLs" (default: false).
+                               # If true, the digest_key will be decoded before being used for digest.
+- `:signature_param_name => 'sign'`   # Change the name of the appended "signature" query parameter (default: "signature").
+
+Options can be given to `UrlSigner.sign_url` and `UrlSigner::Signer.new`, through parameters, with the block syntax, or both:
+
+```ruby
+UrlSigner.sign_url("http://google.com/foo/bar?toc=tic&tac=tuc", 'your_secret_key', :path => false)
+
+UrlSigner::Signer.new do |signer|
+  signer.url        = "http://google.com/foo/bar?toc=tic&tac=tuc"
+  signer.digest_key = 'your_secret_key'
+  signer.path       = false
 end
 
 UrlSigner::Signer.new("http://google.com/foo/bar?toc=tic&tac=tuc", :path => false) do |signer|
-  signer.private_key        = 'your_secret_key'
-  signer.signature_key      = 'sign'
+  signer.digest_key        = 'your_secret_key'
+  signer.base64_digest_key = true
 end
-
-# And when you're ready, just call #sign_url on your fresh instance:
-@signer.sign_url # => "http://google.com/foo/bar?toc=tic&tac=tuc&sign=<generated_signature>"
 ```
 
 ### Inspiration
