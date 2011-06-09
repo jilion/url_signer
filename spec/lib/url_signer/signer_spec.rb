@@ -97,6 +97,10 @@ describe UrlSigner::Signer do
       URI.parse(described_class.new(url, key).signed_url).host.should == URI.parse(url).host
     end
 
+    it "returns an URL with the same original port" do
+      URI.parse(described_class.new("http://localhost:3000", key).signed_url).port.should == 3000
+    end
+
     it "returns an URL with the same query params ordered" do
       URI.parse(described_class.new(url, key).signed_url).query.should =~ /^abc=def&test=true.+/
     end

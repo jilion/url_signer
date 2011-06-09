@@ -23,10 +23,9 @@ module UrlSigner
     end
 
     def signed_url
-      "#{@url.scheme}://" +
-      @url.host +
-      @signed_url ||= @url.path + '?' + sorted_query_string + (sorted_query_string.empty? ? '' : '&') +
-      "#{@options[:signature_param_name]}=#{signature}"
+      @signed_url ||= "#{@url.scheme}://#{@url.host}:#{@url.port}#{@url.path}" +
+                      '?' + sorted_query_string + (sorted_query_string.empty? ? '' : '&') +
+                      "#{@options[:signature_param_name]}=#{signature}"
     rescue => ex
       puts ex.message
       ''
