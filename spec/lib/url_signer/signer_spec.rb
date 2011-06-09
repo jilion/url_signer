@@ -20,7 +20,7 @@ describe UrlSigner::Signer do
       end
 
       it "sets options" do
-        subject.options.should == { :path => false, :digest_key_encoding => :base64, :signature_param_name => 'sign' }
+        subject.options.should == { :verb => 'GET',:path => false, :digest_key_encoding => :base64, :signature_param_name => 'sign' }
       end
     end
 
@@ -45,7 +45,7 @@ describe UrlSigner::Signer do
       end
 
       it "sets options" do
-        subject.options.should == { :path => false, :digest_key_encoding => :base64, :signature_param_name => 'sign' }
+        subject.options.should == { :verb => 'GET', :path => false, :digest_key_encoding => :base64, :signature_param_name => 'sign' }
       end
     end
 
@@ -67,7 +67,7 @@ describe UrlSigner::Signer do
       end
 
       it "sets options" do
-        subject.options.should == { :path => false, :digest_key_encoding => :base64, :signature_param_name => 'sign' }
+        subject.options.should == { :verb => 'GET',:path => false, :digest_key_encoding => :base64, :signature_param_name => 'sign' }
       end
     end
 
@@ -102,11 +102,11 @@ describe UrlSigner::Signer do
     end
 
     it "returns an URL with the same query params ordered" do
-      URI.parse(described_class.new(url, key).signed_url).query.should =~ /^abc=def&test=true.+/
+      URI.parse(described_class.new(url, key).signed_url).query.should =~ /^test=true&abc=def.+/
     end
 
     it "returns an URL with a new signature param appended" do
-      URI.parse(described_class.new(url, key).signed_url).query.should =~ /^abc=def&test=true&signature=.+/
+      URI.parse(described_class.new(url, key).signed_url).query.should =~ /^test=true&abc=def&signature=.+/
     end
 
     it "returns an URL that is stripped" do
@@ -115,6 +115,17 @@ describe UrlSigner::Signer do
 
     it "always append '?' before generate signature" do
       described_class.new("http://google.com/foo/bar", key).signed_url.should == described_class.new("http://google.com/foo/bar?", key).signed_url
+    end
+
+    describe ":verb option" do
+      before(:all) do
+        @signer = described_class.new(url, key, :verb => 'POST')
+      end
+      subject { @signer }
+
+      it "sets verb" do
+        subject.verb.should == 'POST'
+      end
     end
 
     describe ":path option" do

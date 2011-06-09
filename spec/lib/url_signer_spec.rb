@@ -20,11 +20,11 @@ describe UrlSigner do
       subject { @signed_url }
 
       it "sets url" do
-        URI.parse(subject).query.should =~ /^tac=tuc&toc=tic.+/
+        URI.parse(subject).query.should =~ /^toc=tic&tac=tuc.+/
       end
 
       it "returns an URL with a new signature param appended" do
-        URI.parse(subject).query.should =~ /^tac=tuc&toc=tic&sign=.+/
+        URI.parse(subject).query.should =~ /^toc=tic&tac=tuc&sign=.+/
       end
     end
   end
