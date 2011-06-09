@@ -41,7 +41,7 @@ module UrlSigner
     end
 
     def respond_to?(method_name)
-      ALLOWED_OPTIONS.detect { |opt| method_name.to_s =~ /^#{opt}=?$/ }
+      ALLOWED_OPTIONS.detect { |opt| method_name.to_s =~ /^#{opt}=?$/ } || super
     end
 
     def signature
