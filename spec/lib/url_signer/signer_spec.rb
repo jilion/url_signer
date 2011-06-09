@@ -20,7 +20,7 @@ describe UrlSigner::Signer do
       end
 
       it "sets options" do
-        subject.options.should == { :verb => 'GET',:path => false, :digest_key_encoding => :base64, :signature_param_name => 'sign' }
+        subject.options.should == { :verb => 'GET', :path => false, :digest_key_encoding => :base64, :signature_param_name => 'sign' }
       end
     end
 
@@ -67,7 +67,7 @@ describe UrlSigner::Signer do
       end
 
       it "sets options" do
-        subject.options.should == { :verb => 'GET',:path => false, :digest_key_encoding => :base64, :signature_param_name => 'sign' }
+        subject.options.should == { :verb => 'GET', :path => false, :digest_key_encoding => :base64, :signature_param_name => 'sign' }
       end
     end
 
@@ -118,13 +118,20 @@ describe UrlSigner::Signer do
     end
 
     describe ":verb option" do
-      before(:all) do
-        @signer = described_class.new(url, key, :verb => 'POST')
+      context "verb as a upcased String" do
+        it "sets verb" do
+          described_class.new(url, key, :verb => 'POST').verb.should == 'POST'
+        end
       end
-      subject { @signer }
-
-      it "sets verb" do
-        subject.verb.should == 'POST'
+      context "verb as a downcased String" do
+        it "sets verb" do
+          described_class.new(url, key, :verb => 'post').verb.should == 'POST'
+        end
+      end
+      context "symbol verb as a Symbol" do
+        it "sets verb" do
+          described_class.new(url, key, :verb => :post).verb.should == 'POST'
+        end
       end
     end
 

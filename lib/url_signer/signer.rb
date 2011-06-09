@@ -12,7 +12,8 @@ module UrlSigner
 
     def initialize(*args)
       @options = { :verb => 'GET', :path => true, :digest_key_encoding => :plain, :signature_param_name => 'signature' }
-      @options.merge!(args.pop) if args.last.kind_of? Hash
+      @options.merge!(sanitized_options(args.pop)) if args.last.kind_of? Hash
+      
       @url, @digest_key = args.shift(2)
 
       block_given? ? yield(self) : self
@@ -53,22 +54,29 @@ module UrlSigner
         @digest_key
       end
 
-      # 2/ create a signature using the private key and the URL
+      # 2/ create a signature using the digest key and the URL
       signature = HMAC::SHA1.digest(
                     decoded_digest_key,
-                    @options[:verb] + '&' +
-                    @url.scheme + @url.host + ":#{@url.port}" + (@options[:path] ? @url.path : '') + '&' +
-                    sorted_query_string
+                    (
+                      @options[:verb] + '&' +
+                      CGI::escape(@url.scheme + @url.host + ":#{@url.port}" + (@options[:path] ? @url.path : '')) + '&' +
+                      CGI::escape(sorted_query_string)
+                    ).downcase
                   )
 
       # 3/ encode the signature into base64 for url use form.
-      @signature ||= url_safe_base64_encode(signature).strip!
+      @signature ||= CGI::escape(url_safe_base64_encode(signature).strip!)
     end
 
   private
 
+    def sanitized_options(hash)
+      hash[:verb] = hash[:verb].to_s.upcase if hash[:verb]
+      hash
+    end
+
     def sorted_query_string
-      @sorted_query_string ||= @url.query.nil? || @url.query.empty? ? '' : CGI::escape(@url.query.split('&').sort.join('&'))
+      @sorted_query_string ||= @url.query.nil? || @url.query.empty? ? '' : @url.query.split('&').sort.join('&')
     end
 
     def url_safe_base64_decode(base64_string)
