@@ -13,7 +13,7 @@ module UrlSigner
     def initialize(*args)
       @options = { :verb => 'GET', :path => true, :digest_key_encoding => :plain, :signature_param_name => 'signature' }
       @options.merge!(sanitized_options(args.pop)) if args.last.kind_of? Hash
-      
+
       @url, @digest_key = args.shift(2)
 
       block_given? ? yield(self) : self
@@ -27,7 +27,7 @@ module UrlSigner
     def signed_url
       @signed_url ||= "#{@url.scheme}://#{@url.host}:#{@url.port}#{@url.path}" +
                       '?' + (@url.query.nil? || @url.query.empty? ? '' : "#{@url.query}&") +
-                      "#{@options[:signature_param_name]}=#{signature}"
+                      "#{CGI::escape(@options[:signature_param_name])}=#{CGI::escape(signature)}"
     rescue => ex
       puts ex.message
       ''
@@ -49,7 +49,7 @@ module UrlSigner
       # 1/ decode the private key
       decoded_digest_key = case @options[:digest_key_encoding]
       when :base64
-        url_safe_base64_decode(@digest_key)
+        Base64.decode64(@digest_key)
       else
         @digest_key
       end
@@ -59,13 +59,13 @@ module UrlSigner
                     decoded_digest_key,
                     (
                       @options[:verb] + '&' +
-                      CGI::escape(@url.scheme + @url.host + ":#{@url.port}" + (@options[:path] ? @url.path : '')) + '&' +
+                      CGI::escape(@url.scheme + "://" + @url.host + ":#{@url.port}" + (@options[:path] ? @url.path : '')) + '&' +
                       CGI::escape(sorted_query_string)
                     ).downcase
                   )
 
       # 3/ encode the signature into base64 for url use form.
-      @signature ||= CGI::escape(url_safe_base64_encode(signature).strip!)
+      @signature ||= Base64.encode64(signature).strip!
     end
 
   private

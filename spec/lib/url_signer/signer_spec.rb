@@ -174,7 +174,7 @@ describe UrlSigner::Signer do
       signer = described_class.new(url, key)
       matches = signer.signed_url.match(/&signature=(.+)/)
 
-      signer.signature.should == matches[1]
+      signer.signature.should == CGI::unescape(matches[1])
     end
   end
 
